@@ -5,7 +5,7 @@
  * Date: 2018/6/2 0002
  * Time: 10:41
  */
-namespace RoseKnife\Jianhang\hang\PayObj;
+namespace RoseKnife\Jianhang\PayObj;
 
 class H5PayServlet
 {

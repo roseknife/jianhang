@@ -6,7 +6,7 @@
  * Date: 2018/6/2
  * Time: 15:19
  */
-namespace RoseKnife\Jianhang\hang\PayObj;
+namespace RoseKnife\Jianhang\PayObj;
 class RefundServlet{
 
     /**

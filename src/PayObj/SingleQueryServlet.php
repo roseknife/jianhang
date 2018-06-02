@@ -7,7 +7,7 @@
  * Time: 15:14
  */
 
-namespace RoseKnife\Jianhang\hang\PayObj;
+namespace RoseKnife\Jianhang\PayObj;
 
 class  SingleQueryServlet{
     /**

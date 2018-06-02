@@ -6,7 +6,7 @@
  * Date: 2018/6/2
  * Time: 16:44
  */
-namespace RoseKnife\Jianhang\hang\PayObj;
+namespace RoseKnife\Jianhang\PayObj;
 class OrderCloseServlet{
 
     /**
