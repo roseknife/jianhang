@@ -6,8 +6,10 @@
  * Date: 2018/6/2
  * Time: 15:28
  */
+
 namespace RoseKnife\Jianhang\PayObj;
-class RefundQueryServlet{
+class RefundQueryServlet
+{
 
     /**
      * @var string 交易码
@@ -39,4 +41,10 @@ class RefundQueryServlet{
      * @var 备用字段 2
      */
     public $ORDER_INFO2;
+
+    /**
+     * @var 签名模式
+     */
+    public $SIGN_TYPE = "RSA";
+
 }

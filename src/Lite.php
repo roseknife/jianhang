@@ -46,7 +46,7 @@ class Lite
 
     /**
      * @desc 检查签名
-     * @param $arr 数组数据
+     * @param array $arr 数组数据
      * @return bool
      */
     public function checksign($arr)

@@ -9,7 +9,8 @@
 
 namespace RoseKnife\Jianhang\PayObj;
 
-class  SingleQueryServlet{
+class  SingleQueryServlet
+{
     /**
      * @var string 交易码
      */
@@ -39,6 +40,10 @@ class  SingleQueryServlet{
      */
     public $ORDER_INFO2;
 
+    /**
+     * @var 签名模式
+     */
+    public $SIGN_TYPE = "RSA";
 
 
 }

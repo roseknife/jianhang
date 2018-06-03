@@ -38,9 +38,9 @@ class OrderCloseServlet{
      */
     public $ORDER_INFO2;
 
-
-
-
-
+    /**
+     * @var 签名模式
+     */
+    public $SIGN_TYPE = "RSA";
 
 }

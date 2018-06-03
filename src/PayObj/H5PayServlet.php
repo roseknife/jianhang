@@ -78,5 +78,10 @@ class H5PayServlet
      */
     public $RETURN_URL;
 
+    /**
+     * @var 签名模式
+     */
+    public $SIGN_TYPE = "RSA";
+
 
 }
