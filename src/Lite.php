@@ -29,6 +29,7 @@ class Lite
      */
     public function exec($obj, $type)
     {
+        $obj->CUST_NO = $this->config['cust_no']; //商户号
         $data = $this->changeData($obj);
         $result = $this->postData($this->config['url'] . $type, $data);
         parse_str($result, $arr);
@@ -106,7 +107,7 @@ class Lite
      * @param $obj
      * @return string
      */
-    public function changeData($obj)
+    private function changeData($obj)
     {
         $data = (array)$obj;
         ksort($data);

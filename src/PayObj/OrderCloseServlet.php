@@ -6,17 +6,17 @@
  * Date: 2018/6/2
  * Time: 16:44
  */
+
 namespace RoseKnife\Jianhang\PayObj;
-class OrderCloseServlet{
+
+class OrderCloseServlet extends PayObjBase
+{
 
     /**
      * @var string 交易码
      */
     public $TRANSCODE = "C4001";
-    /**
-     * @var 商户编号
-     */
-    public $CUST_NO;
+
 
     /**
      * @var 商户订单号

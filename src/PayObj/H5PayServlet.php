@@ -5,18 +5,15 @@
  * Date: 2018/6/2 0002
  * Time: 10:41
  */
+
 namespace RoseKnife\Jianhang\PayObj;
 
-class H5PayServlet
+class H5PayServlet extends PayObjBase
 {
     /**
      * @var string 交易码
      */
     public $TRANSCODE = "P1004";
-    /**
-     * @var 商户编号
-     */
-    public $CUST_NO;
 
     /**
      * @var 商户订单号

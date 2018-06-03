@@ -8,17 +8,14 @@
  */
 
 namespace RoseKnife\Jianhang\PayObj;
-class RefundServlet
+class RefundServlet extends PayObjBase
 {
 
     /**
      * @var string 交易码
      */
     public $TRANSCODE = "R3001";
-    /*
-     * @var 商户编号
-     */
-    public $CUST_NO;
+
     /*
      * @var 商户订单号
      */

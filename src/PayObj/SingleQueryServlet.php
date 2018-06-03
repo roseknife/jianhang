@@ -9,16 +9,13 @@
 
 namespace RoseKnife\Jianhang\PayObj;
 
-class  SingleQueryServlet
+class  SingleQueryServlet extends PayObjBase
 {
     /**
      * @var string 交易码
      */
     public $TRANSCODE = "Q2001";
-    /*
-     * @var 商户编号
-     */
-    public $CUST_NO;
+
 
     /*
      * @var 商户订单号
