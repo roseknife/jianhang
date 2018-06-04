@@ -87,7 +87,7 @@ class Lite
      * @param bool $keyfromfile Key文件
      * @return string 签名字符串
      */
-    function alonersaSign($data,$privatekey,$signType = "RSA",$keyfromfile=false) {
+    public function alonersaSign($data,$privatekey,$signType = "RSA",$keyfromfile=false) {
 
         if(!$keyfromfile){
             $priKey=$privatekey;
