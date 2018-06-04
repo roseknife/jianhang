@@ -9,6 +9,7 @@
 
 namespace RoseKnife\Jianhang\PayObj;
 
+
 class  SingleQueryServlet extends PayObjBase
 {
     /**

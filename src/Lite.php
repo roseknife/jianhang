@@ -29,20 +29,34 @@ class Lite
      */
     public function exec($obj, $type)
     {
-        $obj->CUST_NO = $this->config['cust_no']; //商户号
+        $obj->CUST_NO = $this->config['cust_no'];
         $data = $this->changeData($obj);
         $result = $this->postData($this->config['url'] . $type, $data);
-        parse_str($result, $arr);
+        $arr = $this->parse_url_param($result);
+
 
         if ($this->checksign($arr)) {
             return [
-                'code' => 0,
+                'code' => 1,
                 'data' => $arr
             ];
         } else {
             return ['code' => 0];
         }
 
+    }
+
+
+    private  function parse_url_param($str)
+    {
+        $data = array();
+        $str=explode('?', $str);
+        $parameter = explode('&', end($str));
+        foreach ($parameter as $val) {
+            $tmp = explode('=', $val);
+            $data[$tmp[0]] = urldecode($tmp[1]);
+        }
+        return $data;
     }
 
     /**
@@ -58,7 +72,7 @@ class Lite
         $sign = $arr['SIGN'];
         unset($arr['SIGN']);
         ksort($arr);
-        $singStr = http_build_query($arr);
+        $singStr = $this->ToUrlParams($arr);
         if ($this->verifySign($singStr, $this->config['publickey'], $sign)) {
             return true;
         } else {
@@ -73,15 +87,33 @@ class Lite
      * @param bool $keyfromfile Key文件
      * @return string 签名字符串
      */
-    private function alonersaSign($data, $privatekey, $signType = "RSA")
-    {
-        $res = "-----BEGIN RSA PRIVATE KEY-----\n" . wordwrap($privatekey, 64, "\n", true) . "\n-----END RSA PRIVATE KEY-----";
-        if ($signType == "RSA2") {
+    function alonersaSign($data,$privatekey,$signType = "RSA",$keyfromfile=false) {
+
+        if(!$keyfromfile){
+            $priKey=$privatekey;
+            $res = "-----BEGIN RSA PRIVATE KEY-----\n" .
+                wordwrap($priKey, 64, "\n", true) .
+                "\n-----END RSA PRIVATE KEY-----";
+        }
+
+        else{
+            $priKey = file_get_contents($privatekey);
+            $res = openssl_get_privatekey($priKey);
+        }
+
+        ($res) or die('您使用的私钥格式错误，请检查RSA私钥配置');
+
+        if ("RSA2" == $signType) {
             openssl_sign($data, $sign, $res, OPENSSL_ALGO_SHA256);
         } else {
             openssl_sign($data, $sign, $res);
         }
-        return base64_encode(openssl_sign($data, $sign, $res));
+
+        if($keyfromfile){
+            openssl_free_key($res);
+        }
+        $sign = base64_encode($sign);
+        return $sign;
     }
 
 
@@ -92,17 +124,53 @@ class Lite
      * @param string $signType
      * @return bool
      */
-    private function verifySign($data, $publickey, $sign, $signType = 'RSA')
-    {
-        $res = "-----BEGIN PUBLIC KEY-----\n" . wordwrap($publickey, 64, "\n", true) . "\n-----END PUBLIC KEY-----";
-        if ($signType == "RSA2") {
+    function verifySign($data,$publickey, $sign,  $signType = 'RSA',$keyfromfile=false) {
+
+        if(!$keyfromfile){
+
+            $pubKey= $publickey;
+            $res = "-----BEGIN PUBLIC KEY-----\n" .
+                wordwrap($pubKey, 64, "\n", true) .
+                "\n-----END PUBLIC KEY-----";
+        }else {
+            //读取公钥文件
+            $pubKey = file_get_contents($publickey);
+            //转换为openssl格式密钥
+            $res = openssl_get_publickey($pubKey);
+        }
+
+        ($res) or die('公钥出错');
+
+        //调用openssl内置方法验签，返回bool值
+
+        if ("RSA2" == $signType) {
             $result = (bool)openssl_verify($data, base64_decode($sign), $res, OPENSSL_ALGO_SHA256);
         } else {
             $result = (bool)openssl_verify($data, base64_decode($sign), $res);
         }
+
+        if($keyfromfile){
+            openssl_free_key($res);
+        }
+
         return $result;
     }
 
+    /*
+ * 拼接url 并对键值进行url转码
+ */
+    private function dataurlencode($data){
+
+        $buff = "";
+        foreach ($data as $k => $v)
+        {
+            if($k != "sign"  && !is_array($v) ){
+                $buff .= $k . "=" . urlencode($v) . "&";
+            }
+        }
+        $buff = trim($buff, "&");
+        return $buff;
+    }
     /**
      * @param $obj
      * @return string
@@ -111,12 +179,25 @@ class Lite
     {
         $data = (array)$obj;
         ksort($data);
-        $dataStr = http_build_query($data);
+        $dataStr = $this->ToUrlParams($data);
         $signStr = '&SIGN=' . urlencode($this->alonersaSign($dataStr, $this->config['privatekey']));
-        foreach ($data as $k => &$v) {
-            $v = urlencode($v);
+        return $this->dataurlencode($data) . $signStr;
+    }
+
+    /*
+     * 拼接字符串
+     */
+    private  function ToUrlParams($data)
+    {
+        $buff = "";
+        foreach ($data as $k => $v)
+        {
+            if($k != "sign"  && !is_array($v) ){
+                $buff .= $k . "=" . $v . "&";
+            }
         }
-        return http_build_query($data) . $signStr;
+        $buff = trim($buff, "&");
+        return $buff;
     }
 
     /**
@@ -128,21 +209,29 @@ class Lite
     private function postData($url, $data, $timeout = 300)
     {
         $headers = array(
-            "Content-type: application/x-www-form-urlencoded;charset='utf-8'",
-            "Accept: */*",
             "Cache-Control: no-cache",
-            "Pragma: no-cache"
+            "Content-Type: application/x-www-form-urlencoded"
         );
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $result = curl_exec($ch);
-        curl_close($ch);
-        return $result;
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => $timeout,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => $data,
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_SSL_VERIFYPEER=>false
+
+        ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        return $response;
+
 
     }
 

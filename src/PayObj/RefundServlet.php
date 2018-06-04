@@ -8,6 +8,7 @@
  */
 
 namespace RoseKnife\Jianhang\PayObj;
+
 class RefundServlet extends PayObjBase
 {
 

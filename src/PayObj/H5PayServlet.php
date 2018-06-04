@@ -8,8 +8,11 @@
 
 namespace RoseKnife\Jianhang\PayObj;
 
-class H5PayServlet extends PayObjBase
+
+class H5PayServlet
 {
+
+    public $CUST_NO;
     /**
      * @var string 交易码
      */

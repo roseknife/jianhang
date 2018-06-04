@@ -9,8 +9,11 @@
 
 namespace RoseKnife\Jianhang\PayObj;
 
+
 class OrderCloseServlet extends PayObjBase
 {
+
+    public $CUST_NO;
 
     /**
      * @var string 交易码
