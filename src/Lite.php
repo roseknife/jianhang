@@ -175,7 +175,7 @@ class Lite
      * @param $obj
      * @return string
      */
-    private function changeData($obj)
+    public function changeData($obj)
     {
         $data = (array)$obj;
         ksort($data);
