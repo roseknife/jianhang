@@ -33,8 +33,6 @@ class Lite
         $data = $this->changeData($obj);
         $result = $this->postData($this->config['url'] . $type, $data);
         $arr = $this->parse_url_param($result);
-
-
         if ($this->checksign($arr)) {
             return [
                 'code' => 1,
@@ -46,6 +44,69 @@ class Lite
 
     }
 
+    /** 对账单查询
+     * @param object $obj 查询对象
+     * @return  array|mixed|string
+     */
+
+    public function CheckServlet($obj){
+        $obj->CUST_NO = $this->config['cust_no'];
+        $data = $this->changeData($obj);
+        $data =$this->xmlRevise($this->arrayToXml($this->parse_url_param_decode($data)));
+        $result = $this->xmlToArray($this->postData($this->config['url'] . 'checkServlet', $data));
+
+        if($result['RTN_CODE'] =="0000"){
+            if(isset($result['QUERYORDER'])){
+                foreach ($result['QUERYORDER'] as $k=>$v){
+                    if(!$this->checksign($this->arrayRevise($v))){
+                        return ['code' => 0];
+                    }
+                }
+            }else{
+                return [
+                    'code' => 0
+                ];
+            }
+            return [
+                'code' => 1,
+                'data' => $result['QUERYORDER']
+            ];
+        }else{
+            return ['code' => 0];
+        }
+    }
+
+    /** 清算查询
+     * @param object $obj 查询对象
+     * @return  array|mixed|string
+     */
+    public function ClearQueryServlet($obj){
+        $obj->CUST_NO = $this->config['cust_no'];
+        $data = $this->changeData($obj);
+        $data =$this->xmlRevise($this->arrayToXml($this->parse_url_param_decode($data)));
+        $result = $this->xmlToArray($this->postData($this->config['url'] . 'clearQueryServlet', $data));
+        if($result['RTN_CODE'] =="0000"){
+            if(isset($result['SHARING_RES'])){
+
+                foreach ($result['SHARING_RES'] as $k=>$v){
+                    if(!$this->checksign($this->arrayRevise($v))){
+                        return ['code' => 0];
+                    }
+                }
+                return [
+                    'code' => 1,
+                    'data' => $result['SHARING_RES']
+                ];
+            }else{
+                return [
+                    'code' => 0
+                ];
+            }
+        }else{
+            return ['code' => 0];
+        }
+    }
+
 
     private  function parse_url_param($str)
     {
@@ -55,6 +116,18 @@ class Lite
         foreach ($parameter as $val) {
             $tmp = explode('=', $val);
             $data[$tmp[0]] = urldecode($tmp[1]);
+        }
+        return $data;
+    }
+
+    private  function parse_url_param_decode($str)
+    {
+        $data = array();
+        $str=explode('?', $str);
+        $parameter = explode('&', end($str));
+        foreach ($parameter as $val) {
+            $tmp = explode('=', $val);
+            $data[$tmp[0]] = $tmp[1];
         }
         return $data;
     }
@@ -73,6 +146,7 @@ class Lite
         unset($arr['SIGN']);
         ksort($arr);
         $singStr = $this->ToUrlParams($arr);
+
         if ($this->verifySign($singStr, $this->config['publickey'], $sign)) {
             return true;
         } else {
@@ -212,7 +286,6 @@ class Lite
             "Cache-Control: no-cache",
             "Content-Type: application/x-www-form-urlencoded"
         );
-
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => $url,
@@ -236,4 +309,62 @@ class Lite
     }
 
 
+    /**
+     * @param $xml
+     * @return mixed
+     */
+    public function xmlToArray($xml)
+    {
+        libxml_disable_entity_loader(true);//禁止引用外部xml实体
+        $values = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+        return $values; //降维处理
+    }
+
+    /**
+     * @param $xml
+     * @return mixed
+     */
+
+    public function arrayToXml($arr)
+    {
+        $xml = "";
+        if (!is_array($arr)) {
+            return false;
+        }
+        foreach ($arr as $key => $value) {
+            if (is_array($value)) {
+                $key = preg_replace('/\[\d*\]/', '', $key);
+                $xml .= "<" . $key . ">" . $this->arrayToXml($value) . "</" . $key . ">";
+            } else {
+                $xml .= "<" . $key . ">" . $value . "</" . $key . ">";
+            }
+        }
+        return $xml;
+    }
+
+
+    /**
+     * 对xml 修正
+     * @param $xml
+     * @return mixed
+     */
+    public function  xmlRevise($xml){
+        return '<?xml version="1.0" encoding="UTF-8"?><DOCUMENT>'.$xml."</DOCUMENT>";
+    }
+
+    /**
+     * 数组降维
+     * @param array $arr
+     * @return
+     */
+    private function arrayRevise($arr){
+
+        foreach ($arr as $k=>&$v){
+            if(is_array($v)){
+                count($v)>1? $v=$v[0]:$v="";
+            }
+            $v = urldecode($v);
+        }
+        return $arr;
+    }
 }
