@@ -108,7 +108,7 @@ class Lite
     }
 
 
-    private  function parse_url_param($str)
+    public  function parse_url_param($str)
     {
         $data = array();
         $str=explode('?', $str);
@@ -120,7 +120,7 @@ class Lite
         return $data;
     }
 
-    private  function parse_url_param_decode($str)
+    public  function parse_url_param_decode($str)
     {
         $data = array();
         $str=explode('?', $str);
@@ -198,7 +198,7 @@ class Lite
      * @param string $signType
      * @return bool
      */
-    function verifySign($data,$publickey, $sign,  $signType = 'RSA',$keyfromfile=false) {
+    public function verifySign($data,$publickey, $sign,  $signType = 'RSA',$keyfromfile=false) {
 
         if(!$keyfromfile){
 
@@ -233,7 +233,7 @@ class Lite
     /*
  * 拼接url 并对键值进行url转码
  */
-    private function dataurlencode($data){
+    public function dataurlencode($data){
 
         $buff = "";
         foreach ($data as $k => $v)
@@ -261,7 +261,7 @@ class Lite
     /*
      * 拼接字符串
      */
-    private  function ToUrlParams($data)
+    public  function ToUrlParams($data)
     {
         $buff = "";
         foreach ($data as $k => $v)
@@ -280,7 +280,7 @@ class Lite
      * @param int $timeout
      * @return mixed
      */
-    private function postData($url, $data, $timeout = 300)
+    public function postData($url, $data, $timeout = 300)
     {
         $headers = array(
             "Cache-Control: no-cache",
@@ -357,7 +357,7 @@ class Lite
      * @param array $arr
      * @return
      */
-    private function arrayRevise($arr){
+    public function arrayRevise($arr){
 
         foreach ($arr as $k=>&$v){
             if(is_array($v)){
