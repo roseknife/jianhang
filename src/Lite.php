@@ -69,7 +69,7 @@ class Lite
             }
             return [
                 'code' => 1,
-                'data' => $result['QUERYORDER']
+                'data' => $result
             ];
         }else{
             return ['code' => 0];
@@ -95,7 +95,7 @@ class Lite
                 }
                 return [
                     'code' => 1,
-                    'data' => $result['SHARING_RES']
+                    'data' => $result
                 ];
             }else{
                 return [
