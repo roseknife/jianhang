@@ -5,7 +5,7 @@
  * Date: 2018/7/24
  * Time: 上午9:06
  */
-namespace RoseKnife\Jianhang\hang\PayObj;
+namespace RoseKnife\Jianhang\PayObj;
 
 class ClearNotifyServlet{
 

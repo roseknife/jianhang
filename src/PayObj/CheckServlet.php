@@ -5,7 +5,7 @@
  * Date: 2018/7/23
  * Time: 下午2:11
  */
-namespace RoseKnife\Jianhang\hang\PayObj;
+namespace RoseKnife\Jianhang\PayObj;
 
 class CheckServlet {
 

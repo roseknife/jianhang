@@ -5,7 +5,7 @@
  * Date: 2018/7/26
  * Time: 下午3:45
  */
-namespace RoseKnife\Jianhang\hang\PayObj;
+namespace RoseKnife\Jianhang\PayObj;
 
 class ClearQueryServlet{
     /**
