@@ -9,7 +9,7 @@
 
 namespace RoseKnife\Jianhang\PayObj;
 
-class RefundQueryServlet extends PayObjBase
+class RefundQueryServlet
 {
 
     /**
